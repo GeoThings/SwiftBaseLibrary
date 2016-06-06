@@ -10,6 +10,10 @@
 	fatalError(message, file: file, line: line)
 }
 
+@noreturn internal func RequiresConcreteImplementation(_ fn: String = #function){
+	fatalError("\(fn) must be overriden in subclass implementations")
+}
+
 // different than Apple Swift, we use nil terminator as default instead of "\n", to mean cross-platform new-line
 @inline(__always) public func debugPrint(_ object: Object?, separator: String = " ", terminator: String? = nil) {
 	if let object = object {
