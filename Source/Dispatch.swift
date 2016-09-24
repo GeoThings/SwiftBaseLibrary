@@ -10,14 +10,18 @@ public public enum DispatchPredicate {
 	case notOnQueue(DispatchQueue)
 }
 
+/*__external func dispatch_assert_queue(_ queue: dispatch_queue_t)
+__external func dispatch_assert_queue_barrier(_ queue: dispatch_queue_t)
+__external func dispatch_assert_queue_not(_ queue: dispatch_queue_t)
+
 internal func _dispatchPreconditionTest(_ condition: DispatchPredicate) -> Bool {
 	switch condition {
 		case .onQueue(let q):
-			break//__dispatch_assert_queue(q)
+			dispatch_assert_queue(q.queue)
 		case .onQueueAsBarrier(let q):
-			break//__dispatch_assert_queue_barrier(q)
+			dispatch_assert_queue_barrier(q.queue)
 		case .notOnQueue(let q):
-			break//__dispatch_assert_queue_not(q)
+			dispatch_assert_queue_not(q.queue)
 	}
 	return true
 }
@@ -26,8 +30,8 @@ internal func _dispatchPreconditionTest(_ condition: DispatchPredicate) -> Bool 
 public func dispatchPrecondition(condition: @autoclosure () -> DispatchPredicate) {
 	// precondition is able to determine release-vs-debug asserts where the overlay
 	// cannot, so formulating this into a call that we can call with precondition()
-	precondition(_dispatchPreconditionTest(condition()), "dispatchPrecondition failure")
-}
+	precondition(_dispatchPreconditionTest(condition()), String("dispatchPrecondition failure"))
+}*/
 
 /*class DispatchIO : DispatchObject {
 	public enum StreamType : UInt {
@@ -264,7 +268,7 @@ public class DispatchQueue : DispatchObject {
 	}*/
 }
 
-@noreturn func dispatchMain() {
+func dispatchMain() -> Never {
 	dispatch_main()
 }
 

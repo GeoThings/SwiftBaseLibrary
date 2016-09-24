@@ -15,8 +15,7 @@ public typealias UIntMax = UInt64
 
 public typealias Bool = Boolean
 
-public typealias Character = Char // for now
-public typealias UnicodeScalar = Character // for now
+public typealias UnicodeScalar = UTF32Char
 public typealias UTF16Char = Char // UInt16
 public typealias UTF32Char = UInt32
 #if !COCOA
@@ -27,7 +26,7 @@ public typealias UTF8Char = Byte
 public typealias UTF8Char = AnsiChar
 #endif
 
-public typealias StaticString = String
+public typealias StaticString = NativeString
 
 public typealias Float = Single
 public typealias Float32 = Single
@@ -70,12 +69,12 @@ public typealias CUnsignedLong = UInt
 public typealias CUnsignedLongLong = UInt64
 public typealias CUnsignedShort = UInt16
 public typealias CWideChar = UnicodeScalar
-public typealias ExtendedGraphemeClusterType = String
+public typealias ExtendedGraphemeClusterType = NativeString
 public typealias FloatLiteralType = Double
 public typealias IntegerLiteralType = Int
-public typealias StringLiteralType = String
+public typealias StringLiteralType = NativeString
 public typealias UWord = UInt16
-public typealias UnicodeScalarType = String
+public typealias UnicodeScalarType = NativeString
 //public typealias Void = () // defined by Compiler
 public typealias Word = Int
 

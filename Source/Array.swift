@@ -71,16 +71,6 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		return sequence.array().mutableCopy()
 		#endif
 	}
-	
-	public init(_ sequence: ISequence<T>) {
-		#if JAVA
-		return sequence.ToList()
-		#elseif CLR | ISLAND
-		return sequence.ToList()
-		#elseif COCOA
-		return sequence.array().mutableCopy()
-		#endif
-	}
 
 	public init(count: Int, repeatedValue: T) {
 		#if JAVA
@@ -238,9 +228,8 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		}
 		#endif
 	}
-	
-	@discardableResult
-	public mutating func removeAtIndex(_ index: Int) -> T {
+
+	@discardableResult public mutating func removeAtIndex(_ index: Int) -> T {
 		#if JAVA
 		return __mapped.remove(index)
 		#elseif CLR | ISLAND
@@ -254,7 +243,17 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		#endif
 	}
 
-	public mutating func removeLast() -> T {
+	public mutating func remove(_ object: T) {
+		#if JAVA
+		__mapped.remove(object)
+		#elseif CLR | ISLAND
+		__mapped.Remove(object)
+		#elseif COCOA
+		__mapped.removeObject(object)
+		#endif
+	}
+
+	@discardableResult public mutating func removeLast() -> T {
 		let c = count
 		if c > 0 {
 			return removeAtIndex(c-1)
@@ -325,7 +324,7 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 			}
 		}})	
 		return result
-		#elseif CLR
+		#elseif CLR || ISLAND
 		let result: List<T> = [T](items: self) 
 		result.Sort() { (a: T, b: T) -> Integer in // ToDo: check if this is the right order
 			if isOrderedBefore(a,b) {
@@ -352,18 +351,6 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		#elseif CLR || ISLAND || COCOA
 		return __mapped.Select(transform)
 		#endif
-	}
-	
-	public func flatMap<U>(_ tranform: (T) -> U?) -> ISequence<U> {
-		
-		var nonNilAfterTransform = [U]()
-		for element in self {
-			if let resultEntity = tranform(element){
-				nonNilAfterTransform.append(resultEntity)
-			}
-		}
-		
-		return nonNilAfterTransform
 	}
 
 	public func reverse() -> ISequence<T> { // we deliberatey return a sequence, not an array, for efficiency and flexibility.
@@ -410,14 +397,4 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		#endif
 	}
 
-}
-
-public func + <T>(lhs: Array<T>, rhs: ISequence<T>) -> Array<T> {
-	
-	let targetArray = [T](items: lhs)
-	for element in rhs {
-		targetArray.append(element)
-	}
-	
-	return targetArray
 }

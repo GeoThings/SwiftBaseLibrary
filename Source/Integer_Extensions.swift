@@ -51,37 +51,37 @@ public extension Int64 {
 
 public extension Int32  {
 
-	// Interval Operators
+	// Range Operators
 	
-	public func ... (a: Int32, b: Int32) -> ClosedInterval/*<Int32>*/ {
-		return ClosedInterval/*<Int32>*/(a, b)
+	public func ... (a: Int32, b: Int32) -> Range/*<Int32>*/ {
+		return Range/*<Int32>*/(a, b, closed: true)
 	}
 	
-	public func ... (a: Int64, b: Int32) -> ClosedInterval/*<Int64>*/ {
-		return ClosedInterval/*<Int64>*/(a, b)
+	public func ... (a: Int64, b: Int32) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: true)
 	}
 	
-	public func ... (a: Int32, b: Int64) -> ClosedInterval/*<Int64>*/ {
-		return ClosedInterval/*<Int64>*/(a, b)
+	public func ... (a: Int32, b: Int64) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: true)
 	}
 	
-	public func ..< (a: Int32, b: Int32) -> HalfOpenInterval/*<Int32>*/ {
-		return HalfOpenInterval/*<Int64>*//*<Int32>*/(a, b)
+	public func ..< (a: Int32, b: Int32) -> Range/*<Int32>*/ {
+		return Range/*<Int64>*//*<Int32>*/(a, b, closed: false)
 	}
 	
-	public func ..< (a: Int64, b: Int32) -> HalfOpenInterval/*<Int64>*/ {
-		return HalfOpenInterval/*<Int64>*/(a, b)
+	public func ..< (a: Int64, b: Int32) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: false)
 	}
 	
-	public func ..< (a: Int32, b: Int64) -> HalfOpenInterval/*<Int64>*/ {
-		return HalfOpenInterval/*<Int64>*/(a, b)
+	public func ..< (a: Int32, b: Int64) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: false)
 	}
 
 }
 
 public extension Int32 /*: AbsoluteValuable*/ {
 
-	@warn_unused_result static func abs(_ x: Self) -> Self {
+	static func abs(_ x: Self) -> Self {
 		#if JAVA
 		return Int32.abs(x)
 		#elseif CLR || ISLAND
@@ -126,14 +126,14 @@ public extension Int32 /*: Strideable*/ {
 
 public extension Int64 {//: Equatable, Comparable, ForwardIndexType {
 	
-	// Interval Operators
+	// Range Operators
 	
-	public func ... (a: Int64, b: Int64) -> ClosedInterval/*<Int64>*/ {
-		return ClosedInterval/*<Int64>*/(a, b)
+	public func ... (a: Int64, b: Int64) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: true)
 	}
 	
-	public func ..< (a: Int64, b: Int64) -> HalfOpenInterval/*<Int64>*/ {
-		return HalfOpenInterval/*<Int64>*/(a, b)
+	public func ..< (a: Int64, b: Int64) -> Range/*<Int64>*/ {
+		return Range/*<Int64>*/(a, b, closed: false)
 	}
 
 	// Strideable
@@ -238,13 +238,26 @@ public extension Double {
 
 public extension UInt64 {
 
-	internal func toHexString(# length: Int = 8) -> String {
+	internal func toHexString(# length: Int = 8) -> NativeString {
 		#if JAVA
-		return String.format("%0\(length)x", self)
+		return NativeString.format("%0\(length)x", self)
 		#elseif CLR || ISLAND
-		return String.Format("{0:x\(length)}", self)
+		return NativeString.Format("{0:x\(length)}", self)
 		#elseif COCOA
-		return String(format: "%0\(length)lld}", self)
+		return NativeString(format: "%0\(length)llx", self)
+		#endif
+	}
+}
+
+public extension UInt32 {
+
+	internal func toHexString(# length: Int = 4) -> NativeString {
+		#if JAVA
+		return NativeString.format("%0\(length)x", self)
+		#elseif CLR || ISLAND
+		return NativeString.Format("{0:x\(length)}", self)
+		#elseif COCOA
+		return NativeString(format: "%0\(length)llx", self)
 		#endif
 	}
 }

@@ -6,12 +6,8 @@
 	}
 }
 
-@Conditional("DEBUG") @noreturn public func assertionFailure(_ message: @autoclosure () -> String, file: String = #file, line: UWord = #line) {
+@Conditional("DEBUG") public func assertionFailure(_ message: @autoclosure () -> String, file: String = #file, line: UWord = #line) -> Never {
 	fatalError(message, file: file, line: line)
-}
-
-@noreturn internal func RequiresConcreteImplementation(_ fn: String = #function){
-	fatalError("\(fn) must be overriden in subclass implementations")
 }
 
 // different than Apple Swift, we use nil terminator as default instead of "\n", to mean cross-platform new-line
@@ -50,20 +46,25 @@ public func debugPrint(_ objects: Object?..., separator: String = " ", terminato
 	}
 }
 
-@noreturn public func fatalError(_ message: @autoclosure () -> String, file: String = #file, line: UInt32 = #line) {
+public func fatalError(_ message: @autoclosure () -> String, file: String = #file, line: UInt32 = #line) -> Never {
 	if let message = message {
 		__throw Exception(message()+", file "+file+", line "+line)
 	} else {
 		__throw Exception("Fatal Error, file "+file+", line "+line)
 	}
 }
+
+internal func RequiresConcreteImplementation(_ fn: String = #function) -> Never {
+	fatalError("\(fn) must be overriden in subclass implementations")
+}
+
 @Conditional("DEBUG") public func precondition(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, file: String = #file, line: UWord = #line) {
 	if (!condition()) {
 		fatalError(message, file: file, line: line)
 	}
 }
 
-@Conditional("DEBUG") @noreturn public func preconditionFailure(_ message: @autoclosure () -> String, file: String = #file, line: UWord = #line) {
+@Conditional("DEBUG") public func preconditionFailure(_ message: @autoclosure () -> String, file: String = #file, line: UWord = #line) -> Never {
 	fatalError(message, file: file, line: line)
 }
 
@@ -120,7 +121,7 @@ func print<Target : OutputStreamType>(_ objects: Object?..., separator: String =
 	}
 }
 
-@warn_unused_result public func readLine(# stripNewline: Bool = true) -> String {
+public func readLine(# stripNewline: Bool = true) -> String {
 	return readLn() + (!stripNewline ? __newLine() : "")
 }
 

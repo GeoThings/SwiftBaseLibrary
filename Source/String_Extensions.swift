@@ -1,4 +1,4 @@
-﻿public extension String : Streamable {
+﻿public extension NativeString : Streamable {
 	
 	typealias Index = Int
 	
@@ -9,16 +9,16 @@
 		for i in 0 ..< count {
 			chars[i] = c
 		}
-		return String(chars)
+		return NativeString(chars)
 		#elseif CLR
-		return String(c, count)
+		return NativeString(c, count)
 		#elseif COCOA
 		return "".stringByPaddingToLength(count, withString: NSString.stringWithFormat("%c", c), startingAtIndex: 0)
 		#endif
 	}
 
 	public init(_ c: Char) {
-		return String(count: 1, repeatedValue: c)
+		return NativeString(count: 1, repeatedValue: c)
 	}
 
 	public init(_ object: AnyObject) {
@@ -60,17 +60,17 @@
 	// Properties
 	//
 	
-	public var characters: String.UTF16CharacterView {
-		return String.UTF16CharacterView(string: self)
+	public var characters: SwiftString.CharacterView {
+		return SwiftString.CharacterView(string: self)
 	}
 	
 	#if !COCOA
-	public var debugDescription: String {
+	public var debugDescription: NativeString {
 		return self
 	}
 	#endif
 	
-	public var endIndex: String.Index { 
+	public var endIndex: NativeString.Index { 
 		#if CLR
 		return self.Length
 		#else
@@ -93,7 +93,7 @@
 	}
 	
 	#if !COCOA
-	public var lowercaseString: String {
+	public var lowercaseString: NativeString {
 		#if JAVA
 		return self.toLowerCase()
 		#elseif CLR || ISLAND
@@ -108,12 +108,12 @@
 	}*/
 	#endif
 	
-	public var startIndex: String.Index {
+	public var startIndex: NativeString.Index {
 		return 0
 	}
 	
 	#if !COCOA
-	public var uppercaseString: String {
+	public var uppercaseString: NativeString {
 		#if JAVA
 		return self.toUpperCase()
 		#elseif CLR || ISLAND
@@ -122,24 +122,28 @@
 	}
 	#endif
 
-	public var utf8: String.UTF8CharacterView {
-		return String.UTF8CharacterView(string: self)
+	#if !ISLAND
+	public var utf8: SwiftString.UTF8View {
+		return SwiftString.UTF8View(string: self)
+	}
+	#endif
+	
+	public var utf16: SwiftString.UTF16View {
+		return SwiftString.UTF16View(string: self)
 	}
 	
-	public var utf16: String.UTF16CharacterView {
-		return String.UTF16CharacterView(string: self)
+	#if !ISLAND
+	public var unicodeScalars: SwiftString.UnicodeScalarView {
+		return SwiftString.UnicodeScalarView(string: self)
 	}
-	
-	public var unicodeScalars: String.UTF32CharacterView {
-		return String.UTF32CharacterView(string: self)
-	}
+	#endif
 	
 	//
 	// Methods
 	//
 
 	#if !COCOA
-	public func hasPrefix(_ `prefix`: String) -> Bool {
+	public func hasPrefix(_ `prefix`: NativeString) -> Bool {
 		#if JAVA
 		return startsWith(`prefix`)
 		#elseif CLR || ISLAND
@@ -147,7 +151,7 @@
 		#endif
 	}
 
-	public func hasSuffix(_ suffix: String) -> Bool {
+	public func hasSuffix(_ suffix: NativeString) -> Bool {
 		#if JAVA
 		return endsWith(suffix)
 		#elseif CLR || ISLAND
@@ -157,14 +161,14 @@
 	#endif
 	
 	#if COCOA
-	public static func fromCString(cs: UnsafePointer<AnsiChar>) -> String? {
+	public static func fromCString(cs: UnsafePointer<AnsiChar>) -> NativeString? {
 		if cs == nil {
 			return nil
 		}
 		return NSString.stringWithUTF8String(cs)
 	}
 	
-	public static func fromCStringRepairingIllFormedUTF8(_ cs: UnsafePointer<AnsiChar>) -> (String?, /*hadError:*/ Bool) {
+	public static func fromCStringRepairingIllFormedUTF8(_ cs: UnsafePointer<AnsiChar>) -> (NativeString?, /*hadError:*/ Bool) {
 		if cs == nil {
 			return (nil, false)
 		}
@@ -173,21 +177,25 @@
 	}
 	#endif
 	
+	#if !ISLAND
 	public func withUTF8Buffer<R>(@noescape _ body: (/*UnsafeBufferPointer<UInt8>*/UTF8Char[]) -> R) -> R {
 		return body(utf8.stringData)
 	}
+	#endif
 	
 	//
 	// Subscripts
 	//
 	
-	//public subscript(range: String.Index) -> Character // implicitly provided by the compiler, already
+	//public subscript(range: NativeString.Index) -> Character // implicitly provided by the compiler, already
 	
-	public subscript(range: Range/*<Int>*/) -> String {
+	//76192: Silver: can't use range as subscript? (SBL)
+	internal func __substring(range: Range/*<Int>*/) -> NativeString {
+	//public subscript(range: Range/*<Int>*/) -> NativeString {
 		#if JAVA
-		return substring(range.startIndex, range.length)
+		return substring(range.lowerBound, range.length)
 		#elseif CLR || ISLAND
-		return Substring(range.startIndex, range.length)
+		return Substring(range.lowerBound, range.length)
 		#elseif COCOA
 		return substringWithRange(range.nativeRange) // todo: make a cast operator
 		#endif
@@ -199,7 +207,7 @@
 	}
 
 	//
-	// Silver-specific extensions not defined in standard Swift.String:
+	// Silver-specific extensions not defined in standard Swift.NativeString:
 	//
 
 	#if !COCOA
@@ -219,8 +227,7 @@
 		} __catch E: NumberFormatException {
 			return nil
 		}
-		//return self.toLowercase()
-		#elseif CLR
+		#elseif CLR || ISLAND
 		var i = 0
 		if Int32.TryParse(self, &i) {
 			return i
@@ -237,31 +244,31 @@
 	}
 	
 	public __abstract class CharacterView {
-		/*fileprivate*/internal init(string: String) {
+		/*fileprivate*/internal init(string: NativeString) {
 		}
 
-		public var startIndex: String.Index { return 0 }
-		public __abstract var endIndex: String.Index { get }
+		public var startIndex: NativeString.Index { return 0 }
+		public __abstract var endIndex: NativeString.Index { get }
 		
 	}
 	
 	public class UTF16CharacterView: CharacterView, ICustomDebugStringConvertible {
-		private let string: String
+		private let string: NativeString
 		
-		/*fileprivate*/internal  init(string: String) {
+		/*fileprivate*/internal  init(string: NativeString) {
 			self.string = string
 		}
 		
-		public override var endIndex: String.Index { return length(string) }
+		public override var endIndex: NativeString.Index { return length(string) }
 
 		public subscript(index: Int) -> UTF16Char {
 			return string[index]
 		}
 
 		#if COCOA
-		override var debugDescription: String! {
+		override var debugDescription: NativeString! {
 		#else
-		public var debugDescription: String {
+		public var debugDescription: NativeString {
 		#endif
 			var result = "UTF16CharacterView("
 			for i in startIndex..<endIndex {
@@ -274,91 +281,6 @@
 			return result
 		}
 	}
-	
-	public class UTF32CharacterView: CharacterView, ICustomDebugStringConvertible {
-		/*fileprivate*/internal let stringData: Byte[]
 
-		/*fileprivate*/internal  init(string: String) {
-			#if JAVA
-			stringData = []
-			fatalError("UTF32CharacterView is not implemenyted for Java yet.")
-			#elseif CLR
-			stringData = System.Text.UTF32Encoding(/*bigendian:*/false, /*BOM:*/false).GetBytes(string) // todo check order  
-			#elseif COCOA
-			if let utf32 = (string as! NSString).dataUsingEncoding(.NSUTF16LittleEndianStringEncoding) { // todo check order  
-				stringData = Byte[](capacity: utf32.length);
-				utf32.getBytes(stringData, length: utf32.length);
-			} else {
-				stringData = []
-				fatalError("Encoding of string to UTF32 failed.")
-			}
-			#endif
-		}
-		
-		public override var endIndex: String.Index { return RemObjects.Elements.System.length(stringData)/4 }
-
-		public subscript(index: Int) -> UTF32Char {
-			return stringData[index*4] + stringData[index*4+1]<<8 + stringData[index*4+2]<<16 + stringData[index*4+3]<<24 // todo: check if order is correct
-		}
-
-		#if COCOA
-		override var debugDescription: String! {
-		#else
-		public var debugDescription: String {
-		#endif
-			var result = "UTF32CharacterView("
-			for i in startIndex..<endIndex {
-				if i > startIndex {
-					result += " "
-				}
-				result += UInt64(self[i]).toHexString(length: 8)
-			}
-			result += ")"
-			return result
-		}
-	}
-	
-	public class UTF8CharacterView: CharacterView, ICustomDebugStringConvertible {
-		/*fileprivate*/internal  let stringData: UTF8Char[]
-		
-		/*fileprivate*/internal init(string: String) {
-			#if JAVA
-			stringData = []
-			fatalError("UTF8CharacterView is not implemenyted for Java yet.")
-			#elseif CLR
-			stringData = System.Text.UTF8Encoding(/*BOM:*/false).GetBytes(string) // todo check order  
-			#elseif COCOA
-			if let utf8 = (string as! NSString).dataUsingEncoding(.NSUTF8StringEncoding) { // todo check order  
-				stringData = UTF8Char[](capacity: utf8.length);
-				utf8.getBytes(stringData, length: utf8.length);
-			} else {
-				stringData = []
-				fatalError("Encoding of string to UTF8 failed.")
-			}
-			#endif
-		}
-		
-		public override var endIndex: String.Index { return RemObjects.Elements.System.length(stringData) }
-
-		public subscript(index: Int) -> UTF8Char {
-			return stringData[index]
-		}
-
-		#if COCOA
-		override var debugDescription: String! {
-		#else
-		public var debugDescription: String {
-		#endif
-			var result = "UTF8CharacterView("
-			for i in startIndex..<endIndex {
-				if i > startIndex {
-					result += " "
-				}
-				result += UInt64(self[i]).toHexString(length: 2)
-			}
-			result += ")"
-			return result
-		}
-	}
 }
 
