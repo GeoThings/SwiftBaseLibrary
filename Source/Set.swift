@@ -48,7 +48,13 @@ __mapped public class Set<T> : ISequence<T> => RemObjects.Elements.System.List<T
 		return NSMutableSet.setWithObjects((&elements[0] as! UnsafePointer<id>), count: length(elements))
 		#endif		
 	}
-
+	
+	#if JAVA
+	public init(_ array: Array<T>){
+		return array
+	}
+	#endif
+	
 	/// Create a `Set` from a finite sequence of items.
 	//init<S : SequenceType where T == T>(_ sequence: S) { // Generics not allowed here
 	//}

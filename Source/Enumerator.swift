@@ -14,9 +14,9 @@ __mapped public class Enumerator<T> => Foundation.NSEnumerator {
 }
 #else
 
-public class Enumerator<T> {
+open class Enumerator<T> {
 	
-	public func nextObject() -> T? {
+	open func nextObject() -> T? {
 		
 		RequiresConcreteImplementation()
 	}
@@ -67,7 +67,6 @@ extension Enumerator: Iterable<T> {
 		RequiresConcreteImplementation()
 	}
 }
-
 #elseif ECHOES
 extension Enumerator: IEnumerable<T> {
 	

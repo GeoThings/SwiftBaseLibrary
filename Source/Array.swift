@@ -71,6 +71,16 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		return sequence.array().mutableCopy()
 		#endif
 	}
+	
+	public init(_ sequence: ISequence<T>) {
+		#if JAVA
+		return sequence.ToList()
+		#elseif CLR | ISLAND
+		return sequence.ToList()
+		#elseif COCOA
+		return sequence.array().mutableCopy()
+		#endif
+	}
 
 	public init(count: Int, repeatedValue: T) {
 		#if JAVA
@@ -228,7 +238,8 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		}
 		#endif
 	}
-
+	
+	@discardableResult
 	public mutating func removeAtIndex(_ index: Int) -> T {
 		#if JAVA
 		return __mapped.remove(index)
@@ -342,6 +353,18 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		return __mapped.Select(transform)
 		#endif
 	}
+	
+	public func flatMap<U>(_ tranform: (T) -> U?) -> ISequence<U> {
+		
+		var nonNilAfterTransform = [U]()
+		for element in self {
+			if let resultEntity = tranform(element){
+				nonNilAfterTransform.append(resultEntity)
+			}
+		}
+		
+		return nonNilAfterTransform
+	}
 
 	public func reverse() -> ISequence<T> { // we deliberatey return a sequence, not an array, for efficiency and flexibility.
 		return (__mapped as! ISequence<T>).Reverse()
@@ -387,4 +410,14 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 		#endif
 	}
 
+}
+
+public func + <T>(lhs: Array<T>, rhs: ISequence<T>) -> Array<T> {
+	
+	let targetArray = [T](items: lhs)
+	for element in rhs {
+		targetArray.append(element)
+	}
+	
+	return targetArray
 }
