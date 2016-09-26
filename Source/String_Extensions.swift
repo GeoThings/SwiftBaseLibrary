@@ -60,9 +60,10 @@
 	// Properties
 	//
 	
+	/*
 	public var characters: SwiftString.CharacterView {
 		return SwiftString.CharacterView(string: self)
-	}
+	}*/
 	
 	#if !COCOA
 	public var debugDescription: NativeString {
@@ -122,6 +123,7 @@
 	}
 	#endif
 
+	/*
 	#if !ISLAND
 	public var utf8: SwiftString.UTF8View {
 		return SwiftString.UTF8View(string: self)
@@ -137,6 +139,7 @@
 		return SwiftString.UnicodeScalarView(string: self)
 	}
 	#endif
+	*/
 	
 	//
 	// Methods
@@ -177,11 +180,13 @@
 	}
 	#endif
 	
+	/*
 	#if !ISLAND
 	public func withUTF8Buffer<R>(@noescape _ body: (/*UnsafeBufferPointer<UInt8>*/UTF8Char[]) -> R) -> R {
 		return body(utf8.stringData)
 	}
 	#endif
+	*/
 	
 	//
 	// Subscripts

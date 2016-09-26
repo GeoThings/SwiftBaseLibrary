@@ -11,6 +11,7 @@ public typealias NativeString = Foundation.NSString
 //public typealias String = SwiftString
 //@assembly:DefaultStringType("Swift", typeOf(Swift.SwiftString))
 
+/*
 public struct SwiftString /*: Streamable*/ {
 	
 	typealias Index = Int
@@ -365,4 +366,4 @@ public struct SwiftString /*: Streamable*/ {
 	}
 	
 }
-
+*/

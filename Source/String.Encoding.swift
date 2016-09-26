@@ -2,6 +2,7 @@
 import CoreFoundation
 #endif
 
+/*
 public extension SwiftString {
 
 	public struct Encoding {
@@ -80,3 +81,4 @@ public extension SwiftString {
 	
 	
 }
+*/

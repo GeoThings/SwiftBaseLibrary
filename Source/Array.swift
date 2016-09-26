@@ -62,6 +62,16 @@ __mapped public class Array<T> : ISequence<T> => RemObjects.Elements.System.List
 	}*/
 	#endif
 	
+	public init(_ sequence: ISequence<T>){
+		#if JAVA
+		return sequence.ToList()
+		#elseif CLR | ISLAND
+		return sequence.ToList()
+		#elseif COCOA
+		return sequence.array().mutableCopy()
+		#endif
+	}
+	
 	public init(sequence: ISequence<T>) {
 		#if JAVA
 		return sequence.ToList()

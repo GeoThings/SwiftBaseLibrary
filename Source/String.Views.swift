@@ -1,4 +1,4 @@
-﻿
+﻿/*
 public extension SwiftString {
 
 	public __abstract class BaseCharacterView {
@@ -256,3 +256,4 @@ public extension SwiftString {
 	#endif
 	
 }
+*/
