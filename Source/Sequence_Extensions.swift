@@ -206,7 +206,7 @@ public extension ISequence /*: ICustomDebugStringConvertible*/ { // 74092: Silve
 		return value
 	}
 
-	public func reverse() -> ISequence<T> {
+	public func reversed() -> ISequence<T> {
 		return self.Reverse()
 	}
 
