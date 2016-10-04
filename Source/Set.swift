@@ -263,7 +263,7 @@ __mapped public class Set<T> : ISequence<T> => RemObjects.Elements.System.List<T
 	/// sequence will be ignored.
 	mutating func exclusiveOrInPlace<S : SequenceType where T == T>(sequence: S)*/
 
-	public func subtract(_ anotherSet: Set<T>) -> Set<T> {
+	public func subtracting(_ anotherSet: Set<T>) -> Set<T> {
 		var result = Set<T>()
 		if (!anotherSet.isEmpty && !self.isEmpty) {
 			for elem in self {
@@ -290,7 +290,7 @@ __mapped public class Set<T> : ISequence<T> => RemObjects.Elements.System.List<T
 	}*/
 	// todo: port others to Sequence as well.
 
-	public func intersect(_ anotherSet: Set<T>) -> Set<T> {
+	public func intersection(_ anotherSet: Set<T>) -> Set<T> {
 		var result = Set<T>()
 		if (!anotherSet.isEmpty && !self.isEmpty) {
 			for elem in self {
