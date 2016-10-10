@@ -265,7 +265,7 @@ __mapped public class Set<T> : ISequence<T> => RemObjects.Elements.System.List<T
 
 	public func subtracting(_ anotherSet: Set<T>) -> Set<T> {
 		var result = Set<T>()
-		if (!anotherSet.isEmpty && !self.isEmpty) {
+		if (!self.isEmpty) {
 			for elem in self {
 				if (!anotherSet.contains(elem)) {
 					result.insert(elem)
